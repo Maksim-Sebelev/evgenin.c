@@ -169,7 +169,7 @@ static void SetWord(char** split_buffer, size_t* word_i, char* SetWord)
 
 static int IsPassSymbol(const char c)
 {
-    return (c == ' ') || (c == '\n');
+    return (c == ' ') || (c == '\n') || (c == '\r');
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------
