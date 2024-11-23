@@ -8,29 +8,41 @@
 
 static char   GetArrElem       (char* arr, size_t elemIndex);
 static char*  GetArrElemPtr    (char* arr, size_t elemIndex);
-static size_t CalcFileLen      (const char* FileName);
+static size_t CalcFileLen      (const char* const FileName);
 static void   SetWord          (char** split_buffer, size_t* word_i, char* SetWord);
 static int    IsPassSymbol     (const char c);
 static void   FindFirstNotPass (char* buffer, size_t* buffer_i);
 static void   Fread            (char* buffer, size_t bufferLen, FILE* filePtr);
 static void   ReadBufRealloc   (char*** split_buffer, size_t splitBufSize);
+static int    IsInt            (const char* const str, const char* const strEnd);
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 
-int strtoi(const char* str)
+int strtoi(const char* const str)
 {
     long res = 0;
     char* strEnd = NULL;
     res = strtol(str, &strEnd, 10);
 
-    assert(strlen(str) == (size_t) (strEnd - str)); // проверка на то, вся ли строка является числом
+    if (!IsInt(str, strEnd))
+    {
+        printf("\n\n'%s' - IS NOT A NUMBER.\n\n", str);
+        assert(0 && "try to convert not int str to int.");
+    }
 
     return (int) res;
 }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------------
+
+static int IsInt(const char* const str, const char* const strEnd)
+{
+    return (int) strlen(str) == (strEnd - str);
+}
+
 //============================ Read File ==============================================================================================================
 
-char** ReadBufferFromFile(const char* file, size_t* bufSize)
+char** ReadBufferFromFile(const char* const file, size_t* bufSize)
 {
     FILE* filePtr = fopen(file, "rb");
     assert(filePtr);
@@ -71,7 +83,6 @@ char** ReadBufferFromFile(const char* file, size_t* bufSize)
                 bufElem = GetArrElem(buffer, buffer_i);
             }
             while (IsPassSymbol(bufElem) && buffer_i <= bufferLen);
-
             SetWord(split_buffer, &word_i, GetArrElemPtr(buffer, buffer_i));
         }
     }
@@ -129,7 +140,7 @@ static void ReadBufRealloc(char*** split_buffer, size_t splitBufSize)
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 
-static size_t CalcFileLen(const char* FileName)
+static size_t CalcFileLen(const char* const FileName)
 {
     struct stat buf = {};
     stat(FileName, &buf);
